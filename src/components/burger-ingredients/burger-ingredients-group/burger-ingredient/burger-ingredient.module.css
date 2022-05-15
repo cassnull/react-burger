@@ -1,0 +1,30 @@
+.Card {
+    width: 272px;
+    height: 208px;
+    position: relative;
+}
+
+.Card:nth-child(2n+1) {
+    margin-right: calc(var(--offset-base-size) * 6);
+}
+
+.Illustration {
+    width: 240px;
+    height: 120px;
+}
+
+.Price {
+    display: flex;
+    justify-content: center;
+}
+
+.Price>p {
+    margin-right: 9px;
+}
+
+.Name {
+    height: 48px;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: center;
+}

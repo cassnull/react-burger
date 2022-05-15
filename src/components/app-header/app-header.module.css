@@ -1,0 +1,51 @@
+.AppHeader {
+    background-color: #1C1C21;
+    height: 88px;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.Menu {
+    display: flex;
+    min-width: 1240px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.MenuItems {
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+}
+
+.MenuItem {
+    height: 56px;
+    list-style-type: none;
+}
+
+.Link {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+}
+
+.Name {
+    color: white;
+    display: inline;
+}
+
+.Profile {
+    display: flex;
+    text-decoration: none;
+    color: white;
+    align-items: center;
+}
+
+.Logo {
+    left: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+}
