@@ -1,0 +1,42 @@
+.BurgerIngredients {
+    width: 600px;
+    background: #131316;
+}
+
+.Title {
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 40px;
+    margin: 0;
+    text-align: left;
+}
+
+.Tabs {
+    display: flex;
+    align-items: flex-start;
+    height: 56px;
+}
+
+.Ingredients {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin: 0;
+    padding-left: 0;
+    height: calc(100vh - 364px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.Ingredients::-webkit-scrollbar {
+    width: 8px;
+}
+
+.Ingredients::-webkit-scrollbar-thumb {
+    background-color: #8585ad;
+}
+
+.Ingredients::-webkit-scrollbar-track {
+    background-color: #2f2f37;
+    margin: 0;
+}
