@@ -1,24 +1,45 @@
-import { Counter, CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components"
+import React, { useState } from 'react'
+import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './burger-ingredient.module.css'
 import PropTypes from 'prop-types'
+import { Modal } from '../../../modal/modal'
+import { IngredientDetails } from '../../../ingredient-details/ingredient-details'
+import { ingredientsDataPropTypes } from '../../../../utils/data'
 
-export const BurgerIngredient = ({ count, image, price, name }) => {
+export const BurgerIngredient = ({ count, ingredientsData }) => {
+    const [isOpenIngredientDetailsModal, setOpenIngredientDetailsModal] = useState(false)
+
+    const handleOpenIngredientInModal = () => {
+        setOpenIngredientDetailsModal(true)
+    }
+
+    const handleCloseIngredientInModal = () => {
+        setOpenIngredientDetailsModal(false)
+    }
+
+    const ingredientTitle = 'Детали ингредиента'
+
     return (
-        <article className={`${styles.Card}`}>
-            {!!count && <Counter count={count} size="default" />}
-            <img src={image} alt={name} className={`ml-4 mr-4 ${styles.Illustration}`} />
-            <div className={`mt-1 mb-1 ${styles.Price}`}>
-                <p className="text text_type_digits-default">{price}</p>
-                <CurrencyIcon type='primary' />
-            </div>
-            <div className={styles.Name}>{name}</div>
-        </article>
+        <>
+            <article className={`${styles.Card}`} onClick={() => handleOpenIngredientInModal()}>
+                {!!count && <Counter count={count} size="default" />}
+                <img src={ingredientsData.image} alt={ingredientsData.name} className={`ml-4 mr-4 ${styles.Illustration}`} />
+                <div className={`mt-1 mb-1 ${styles.Price}`}>
+                    <p className="text text_type_digits-default">{ingredientsData.price}</p>
+                    <CurrencyIcon type='primary' />
+                </div>
+                <div className={styles.Name}>{ingredientsData.name}</div>
+            </article>
+            {isOpenIngredientDetailsModal && (
+                <Modal onClose={handleCloseIngredientInModal} title={ingredientTitle}>
+                    <IngredientDetails ingredientsData={ingredientsData} />
+                </Modal>
+            )}
+        </>
     )
 }
 
 BurgerIngredient.propTypes = {
     count: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
+    ingredientsData: ingredientsDataPropTypes.isRequired,
 }
