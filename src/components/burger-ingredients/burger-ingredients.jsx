@@ -1,4 +1,4 @@
-import React, { createRef, useMemo, useState } from 'react'
+import { createRef, useMemo, useState, useEffect } from 'react'
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
 import { BurgerIngredientsGroup } from './burger-ingredients-group/burger-ingredients-group'
 import styles from './burger-ingredients.module.css'
@@ -10,7 +10,6 @@ export const BurgerIngredients = ({ ingredients, order }) => {
 
     const filter = (ingredients, ingredientType) => ingredients.filter((item) => item.type === ingredientType)
 
-    const bunsRefElement = createRef()
     const buns = useMemo(() =>
         filter(ingredients, ingredientType.BUN),
         [ingredients]
@@ -20,7 +19,6 @@ export const BurgerIngredients = ({ ingredients, order }) => {
         [order]
     )
 
-    const saucesRefElement = createRef()
     const sauces = useMemo(() =>
         filter(ingredients, ingredientType.SAUCE),
         [ingredients]
@@ -30,7 +28,6 @@ export const BurgerIngredients = ({ ingredients, order }) => {
         [order]
     )
 
-    const mainsRefElement = createRef()
     const mains = useMemo(() =>
         filter(ingredients, ingredientType.MAIN),
         [ingredients]
@@ -40,54 +37,40 @@ export const BurgerIngredients = ({ ingredients, order }) => {
         [order]
     )
 
-    const getRefElement = React.useCallback((typeName) => {
-        switch (typeName) {
-            case ingredientType.BUN:
-                return bunsRefElement
-            case ingredientType.SAUCE:
-                return saucesRefElement
-            case ingredientType.MAIN:
-                return mainsRefElement
-            default:
-                throw new Error(`Неизвестный тип '${typeName}'`);
-        }
-    }, [bunsRefElement, saucesRefElement, mainsRefElement])
-
-    const trackScroll = React.useCallback(() => {
-        const top = 325;
-        const mainsElement = getRefElement(ingredientType.MAIN).current
-        if (mainsElement && mainsElement.getBoundingClientRect().top <= top) {
-            setCurrentTab(ingredientType.MAIN)
-            return
-        }
-        const saucesElement = getRefElement(ingredientType.SAUCE).current
-        if (saucesElement && saucesElement.getBoundingClientRect().top <= top) {
-            setCurrentTab(ingredientType.SAUCE)
-            return
-        }
-        setCurrentTab(ingredientType.BUN)
-    }, [getRefElement])
-
     const ingredientsRefElement = createRef()
 
-    React.useEffect(() => {
-        const element = ingredientsRefElement.current;
-        if (element) {
-            element.addEventListener('scroll', trackScroll);
-            trackScroll()
-        }
+    const observer = useMemo(() => {
+        return new IntersectionObserver(
+            (entries) => {
+                const selectedTab = entries.some((entry) => {
+                    if (entry.isIntersecting) {
+                        setCurrentTab(entry.target.id)
+                        return true
+                    }
+                    return false
+                })
+                if (!selectedTab) {
+                    const nextSibling = document.getElementById(currentTab).nextSibling
+                    const nextTab = nextSibling?.id
+                    if (nextTab) {
+                        setCurrentTab(nextTab)
+                    }
+                }
+            },
+            { root: ingredientsRefElement.current, threshold: 0.3, rootMargin: '0px', }
+        )
+    }, [ingredientsRefElement, currentTab])
 
+    useEffect(() => {
         return () => {
-            if (element) {
-                element.removeEventListener('scroll', trackScroll)
-            }
+            observer.disconnect()
         }
-    }, [ingredientsRefElement, trackScroll]);
+    }, [observer])
 
     const onTabClick = (tab) => {
-        setCurrentTab(tab);
-        const element = getRefElement(tab).current
+        const element = document.getElementById(tab)
         if (element) {
+            setCurrentTab(tab);
             element.scrollIntoView({ behavior: "smooth" });
         }
     }
@@ -109,9 +92,9 @@ export const BurgerIngredients = ({ ingredients, order }) => {
                 </Tab>
             </div>
             <ul className={styles.Ingredients} ref={ingredientsRefElement}>
-                <BurgerIngredientsGroup id={ingredientType.BUN} type='Булки' ingredients={buns} ref={bunsRefElement} selected={selectedBuns} />
-                <BurgerIngredientsGroup id={ingredientType.SAUCE} type='Соусы' ingredients={sauces} ref={saucesRefElement} selected={selectedSauces}/>
-                <BurgerIngredientsGroup id={ingredientType.MAIN} type='Начинка' ingredients={mains} ref={mainsRefElement} selected={selectedMains}/>
+                <BurgerIngredientsGroup id={ingredientType.BUN} type='Булки' ingredients={buns} selected={selectedBuns} observer={observer} />
+                <BurgerIngredientsGroup id={ingredientType.SAUCE} type='Соусы' ingredients={sauces} selected={selectedSauces} observer={observer} />
+                <BurgerIngredientsGroup id={ingredientType.MAIN} type='Начинка' ingredients={mains} selected={selectedMains} observer={observer} />
             </ul>
         </section>
     )

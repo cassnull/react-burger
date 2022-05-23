@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
     Button,
     CurrencyIcon,
@@ -7,14 +7,25 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './burger-constructor.module.css'
 import { orderDataPropTypes } from '../../utils/data'
+import { Modal } from '../modal/modal'
+import { OrderDetails } from '../order-details/order-details'
 
 export const BurgerConstructor = ({ order }) => {
+    const [orderNumber,] = useState('034536')
+    const [isOpenOrderDetailsModal, setOpenOrderDetailsModal] = useState(false)
+
     const total = useMemo(() => {
         let total = order.bun ? order.bun.price : 0;
         return order.toppings.reduce((previousValue, ingr) => previousValue + ingr.price, total)
-    },
-        [order]
-    )
+    }, [order])
+
+    const handleOpenOrderDetailsInModal = () => {
+        setOpenOrderDetailsModal(true)
+    }
+
+    const handleCloseOrderDetailsInModal = () => {
+        setOpenOrderDetailsModal(false)
+    }
 
     return (
         <section className={`pt-25 mb-10 ${styles.BurgerConstructor}`}>
@@ -56,8 +67,13 @@ export const BurgerConstructor = ({ order }) => {
                     <p className={`text text_type_digits-medium ${styles.Price}`}>{total}</p>
                     <CurrencyIcon type='primary' />
                 </div>
-                <Button>Оформите заказ</Button>
+                <Button onClick={handleOpenOrderDetailsInModal}>Оформите заказ</Button>
             </div>
+            {isOpenOrderDetailsModal && (
+                <Modal onClose={handleCloseOrderDetailsInModal}>
+                    <OrderDetails orderNumber={orderNumber} />
+                </Modal>
+            )}
         </section>
     )
 }
