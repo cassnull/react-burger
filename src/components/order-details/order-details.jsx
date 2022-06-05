@@ -1,14 +1,16 @@
+import { useContext } from 'react'
 import styles from './order-details.module.css'
 import Done from './img/done.svg'
-import PropTypes from 'prop-types'
+import { OrderContext } from '../../services/orderContext'
 
-export const OrderDetails = ({ orderNumber }) => {
+export const OrderDetails = () => {
+    const [order] = useContext(OrderContext)
     return (
         <div className={styles.OrderDetails}>
             <h3
                 className={`text text_type_digits-large mt-30 ${styles.OrderNumber}`}
             >
-                {orderNumber}
+                {order.number}
             </h3>
             <p className={`text text_type_main-medium mt-8 mb-15 ${styles.OrderIdentifier}`}>
                 идентификатор заказа
@@ -22,8 +24,4 @@ export const OrderDetails = ({ orderNumber }) => {
             </p>
         </div>
     );
-}
-
-OrderDetails.propTypes = {
-    orderNumber: PropTypes.string.isRequired,
 }

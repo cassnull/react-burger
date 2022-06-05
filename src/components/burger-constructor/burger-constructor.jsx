@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useContext } from 'react'
 import {
     Button,
     CurrencyIcon,
@@ -6,21 +6,39 @@ import {
     DragIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './burger-constructor.module.css'
-import { orderDataPropTypes } from '../../utils/data'
 import { Modal } from '../modal/modal'
 import { OrderDetails } from '../order-details/order-details'
+import { OrderContext } from '../../services/orderContext'
+import * as api from '../../services/api'
 
-export const BurgerConstructor = ({ order }) => {
-    const [orderNumber,] = useState('034536')
+export const BurgerConstructor = () => {
+    const [error, setError] = useState("")
+
+    const [order, orderDispatch] = useContext(OrderContext)
+
     const [isOpenOrderDetailsModal, setOpenOrderDetailsModal] = useState(false)
 
     const total = useMemo(() => {
-        let total = order.bun ? order.bun.price : 0;
+        let total = order.bun ? order.bun.price * 2 : 0;
         return order.toppings.reduce((previousValue, ingr) => previousValue + ingr.price, total)
     }, [order])
 
     const handleOpenOrderDetailsInModal = () => {
-        setOpenOrderDetailsModal(true)
+        if (order.bun) {
+            const getData = async () => {
+                await api.createOrder([order.bun._id, ...order.toppings.map(t => t._id)])
+                    .then(data => {
+                        setError("");
+                        orderDispatch({ type: "setNumber", data })
+                        setOpenOrderDetailsModal(true)
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        setError(error.message)
+                    })
+            }
+            getData()
+        }
     }
 
     const handleCloseOrderDetailsInModal = () => {
@@ -31,13 +49,13 @@ export const BurgerConstructor = ({ order }) => {
         <section className={`pt-25 mb-10 ${styles.BurgerConstructor}`}>
             <ul className={`ml-4 ${styles.ConstructorList}`}>
                 <div className={`ml-8 mr-4 mb-4 ${styles.First}`}>
-                    <ConstructorElement
+                    {order.bun && (<ConstructorElement
                         type="top"
                         isLocked={true}
                         text={`${order.bun.name} (верх)`}
                         price={order.bun.price}
                         thumbnail={order.bun.image}
-                    />
+                    />)}
                 </div>
                 <div className={styles.Middle}>
                     {order.toppings.map((ingr, i) => (
@@ -53,13 +71,13 @@ export const BurgerConstructor = ({ order }) => {
                     )}
                 </div>
                 <div className={`ml-8 mt-4 mr-4 ${styles.Last}`}>
-                    <ConstructorElement
+                    {order.bun && (<ConstructorElement
                         type="bottom"
                         isLocked={true}
                         text={`${order.bun.name} (низ)`}
                         price={order.bun.price}
                         thumbnail={order.bun.image}
-                    />
+                    />)}
                 </div>
             </ul>
             <div className={`mt-10 mr-4 ${styles.Order}`}>
@@ -69,15 +87,14 @@ export const BurgerConstructor = ({ order }) => {
                 </div>
                 <Button onClick={handleOpenOrderDetailsInModal}>Оформите заказ</Button>
             </div>
-            {isOpenOrderDetailsModal && (
-                <Modal onClose={handleCloseOrderDetailsInModal}>
-                    <OrderDetails orderNumber={orderNumber} />
-                </Modal>
-            )}
+            {!error
+                ? (isOpenOrderDetailsModal && (
+                    <Modal onClose={handleCloseOrderDetailsInModal}>
+                        <OrderDetails />
+                    </Modal>
+                ))
+                : `Ошибка: ${error}`
+            }
         </section>
     )
-}
-
-BurgerConstructor.propTypes = {
-    order: orderDataPropTypes.isRequired,
 }
