@@ -2,40 +2,10 @@ import { createRef, useMemo, useState, useEffect } from 'react'
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
 import { BurgerIngredientsGroup } from './burger-ingredients-group/burger-ingredients-group'
 import styles from './burger-ingredients.module.css'
-import { ingredientType, ingredientsDataPropTypes, orderDataPropTypes } from '../../utils/data'
-import PropTypes from 'prop-types'
+import { ingredientType } from '../../utils/types'
 
-export const BurgerIngredients = ({ ingredients, order }) => {
+export const BurgerIngredients = () => {
     const [currentTab, setCurrentTab] = useState(ingredientType.BUN)
-
-    const filter = (ingredients, ingredientType) => ingredients.filter((item) => item.type === ingredientType)
-
-    const buns = useMemo(() =>
-        filter(ingredients, ingredientType.BUN),
-        [ingredients]
-    )
-    const selectedBuns = useMemo(() =>
-        order.bun ? [order.bun] : [],
-        [order]
-    )
-
-    const sauces = useMemo(() =>
-        filter(ingredients, ingredientType.SAUCE),
-        [ingredients]
-    )
-    const selectedSauces = useMemo(() =>
-        filter(order.toppings, ingredientType.SAUCE),
-        [order]
-    )
-
-    const mains = useMemo(() =>
-        filter(ingredients, ingredientType.MAIN),
-        [ingredients]
-    )
-    const selectedMains = useMemo(() =>
-        filter(order.toppings, ingredientType.MAIN),
-        [order]
-    )
 
     const ingredientsRefElement = createRef()
 
@@ -92,15 +62,10 @@ export const BurgerIngredients = ({ ingredients, order }) => {
                 </Tab>
             </div>
             <ul className={styles.Ingredients} ref={ingredientsRefElement}>
-                <BurgerIngredientsGroup id={ingredientType.BUN} type='Булки' ingredients={buns} selected={selectedBuns} observer={observer} />
-                <BurgerIngredientsGroup id={ingredientType.SAUCE} type='Соусы' ingredients={sauces} selected={selectedSauces} observer={observer} />
-                <BurgerIngredientsGroup id={ingredientType.MAIN} type='Начинка' ingredients={mains} selected={selectedMains} observer={observer} />
+                <BurgerIngredientsGroup id={ingredientType.BUN} type='Булки' observer={observer} />
+                <BurgerIngredientsGroup id={ingredientType.SAUCE} type='Соусы' observer={observer} />
+                <BurgerIngredientsGroup id={ingredientType.MAIN} type='Начинка' observer={observer} />
             </ul>
         </section>
     )
-}
-
-BurgerIngredients.propTypes = {
-    ingredients: PropTypes.arrayOf(ingredientsDataPropTypes.isRequired).isRequired,
-    order: orderDataPropTypes.isRequired,
 }

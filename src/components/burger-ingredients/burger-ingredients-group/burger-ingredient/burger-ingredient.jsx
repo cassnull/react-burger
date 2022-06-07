@@ -4,7 +4,7 @@ import styles from './burger-ingredient.module.css'
 import PropTypes from 'prop-types'
 import { Modal } from '../../../modal/modal'
 import { IngredientDetails } from '../../../ingredient-details/ingredient-details'
-import { ingredientsDataPropTypes } from '../../../../utils/data'
+import { ingredientsDataPropTypes } from '../../../../utils/types'
 
 export const BurgerIngredient = ({ count, ingredientsData }) => {
     const [isOpenIngredientDetailsModal, setOpenIngredientDetailsModal] = useState(false)

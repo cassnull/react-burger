@@ -1,13 +1,22 @@
-import { useCallback, useEffect, createRef } from 'react';
+import { useCallback, useEffect, createRef, useContext } from 'react';
 import styles from './burger-ingredients-group.module.css'
 import { BurgerIngredient } from './burger-ingredient/burger-ingredient'
 import PropTypes from 'prop-types'
-import { ingredientsDataPropTypes } from '../../../utils/data'
+import { IngredientsContext } from '../../../services/ingredientsContext'
+import { OrderContext } from '../../../services/orderContext'
 
-export const BurgerIngredientsGroup = ({ id, type, ingredients, selected, observer }) => {
+export const BurgerIngredientsGroup = ({ id, type, observer }) => {
+    const [ingredients] = useContext(IngredientsContext)
+    const [order] = useContext(OrderContext)
+
     const getCount = useCallback((id) => {
-        return selected.filter(si => si._id === id).length
-    }, [selected])
+        if (order.bun?._id === id) return 2
+        return order.toppings.filter(t => t._id === id).length
+    }, [order])
+
+    const getIngredients = useCallback(() => {
+        return ingredients.ingredients.filter(ingr => ingr.type === id)
+    }, [id, ingredients])
 
     const ref = createRef()
     useEffect(() => {
@@ -29,7 +38,7 @@ export const BurgerIngredientsGroup = ({ id, type, ingredients, selected, observ
                 {type}
             </h3>
             <div className={`ml-4 ${styles.Ingredients}`}>
-                {ingredients.map((ingr) =>
+                {getIngredients().map(ingr =>
                     <BurgerIngredient key={ingr._id} count={getCount(ingr._id)} ingredientsData={ingr} />
                 )}
             </div>
@@ -40,7 +49,5 @@ export const BurgerIngredientsGroup = ({ id, type, ingredients, selected, observ
 BurgerIngredientsGroup.propTypes = {
     id: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    ingredients: PropTypes.arrayOf(ingredientsDataPropTypes.isRequired).isRequired,
-    selected: PropTypes.arrayOf(ingredientsDataPropTypes.isRequired).isRequired,
     observer: PropTypes.object.isRequired,
 }
