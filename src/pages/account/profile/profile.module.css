@@ -1,0 +1,41 @@
+.Container {
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.Wrapper {
+  margin-top: 120px;
+  display: flex;
+  column-gap: 60px;
+}
+
+.LeftSide {
+  max-width: 320px;
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+}
+
+.Link {
+  display: flex;
+  text-decoration: none;
+  color: var(--text-inactive-color)
+}
+
+.Active {
+  color: var(--text-primary-color);
+}
+
+.Text {
+  color: var(--text-inactive-color);
+  opacity: 0.4;
+}
+
+.Buttons {
+  display: flex;
+  justify-content: flex-end;
+}

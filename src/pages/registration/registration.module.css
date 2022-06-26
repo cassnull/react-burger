@@ -1,0 +1,30 @@
+.Container {
+  height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 24px;
+}
+
+.BottomSide {
+  text-align: center;
+}
+
+.Text {
+  color: #8585AD;
+}
+
+.Link {
+  color: var(--colors-interface-accent);
+  text-decoration: none;
+}

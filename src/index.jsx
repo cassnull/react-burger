@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import { App } from './components/app/app'
 import reportWebVitals from './reportWebVitals'
@@ -10,10 +11,10 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import thunk from 'redux-thunk'
 
-const rootElement = document.getElementById('root') as HTMLElement
+const rootElement = document.getElementById('root')
 const root = ReactDOM.createRoot(rootElement)
 
-const win = window as any
+const win = window
 const composeEnhancers = win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   ? win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
   : compose
@@ -26,7 +27,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <DndProvider backend={HTML5Backend}>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </DndProvider>
     </Provider>
   </React.StrictMode>

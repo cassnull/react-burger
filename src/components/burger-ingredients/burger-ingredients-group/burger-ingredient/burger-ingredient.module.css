@@ -4,10 +4,6 @@
     position: relative;
 }
 
-.Card:nth-child(2n+1) {
-    margin-right: calc(var(--offset-base-size) * 6);
-}
-
 .Illustration {
     width: 240px;
     height: 120px;
@@ -27,4 +23,16 @@
     font-size: 16px;
     font-weight: 400;
     text-align: center;
+}
+
+.Link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-primary-color);
+    text-decoration: none;
+}
+
+.Link:nth-child(2n+1) {
+    margin-right: calc(var(--offset-base-size) * 6);
 }

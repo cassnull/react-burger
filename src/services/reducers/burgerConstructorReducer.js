@@ -1,4 +1,4 @@
-import { CONTRUCTOR } from '../actions'
+import { CONTRUCTOR } from '../actions/constructorAction'
 
 const initialState = {
   bun: undefined,
@@ -33,7 +33,9 @@ export const burgerConstructorReducer = (state = initialState, action) => {
         toppings: toppings
       }
     }
-
+    case CONTRUCTOR.RESET: {
+      return initialState
+    }
     default:
       return state;
   }

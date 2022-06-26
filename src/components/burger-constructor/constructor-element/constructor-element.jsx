@@ -6,7 +6,7 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import { useDrag, useDrop } from 'react-dnd'
 import { useDispatch } from 'react-redux'
-import { deleteToppingFromConstructor, changeToppingsPosition } from '../../../services/actions'
+import { deleteToppingFromConstructor, changeToppingsPosition } from '../../../services/actions/constructorAction'
 import PropTypes from 'prop-types'
 import { ingredientsDataPropTypes } from '../../../utils/types'
 

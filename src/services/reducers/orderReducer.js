@@ -1,4 +1,4 @@
-import { ORDER } from '../actions/index'
+import { ORDER } from '../actions/orderAction'
 
 const initialState = {
   number: null,
@@ -29,7 +29,7 @@ export const orderReducer = (state = initialState, action) => {
       return {
         ...state,
         request: false,
-        failed: false,
+        failed: true,
         error: action.error,
       }
     }
