@@ -1,21 +1,20 @@
-import { useCallback, useEffect, createRef, useContext } from 'react';
+import { useCallback, useEffect, createRef } from 'react';
 import styles from './burger-ingredients-group.module.css'
 import { BurgerIngredient } from './burger-ingredient/burger-ingredient'
 import PropTypes from 'prop-types'
-import { IngredientsContext } from '../../../services/ingredientsContext'
-import { OrderContext } from '../../../services/orderContext'
+import { useSelector } from 'react-redux'
 
 export const BurgerIngredientsGroup = ({ id, type, observer }) => {
-    const [ingredients] = useContext(IngredientsContext)
-    const [order] = useContext(OrderContext)
+    const ingredients = useSelector(state => state.ingredients.ingredients)
+    const { bun, toppings } = useSelector((state) => state.burgerConstructor)
 
     const getCount = useCallback((id) => {
-        if (order.bun?._id === id) return 2
-        return order.toppings.filter(t => t._id === id).length
-    }, [order])
+        if (bun && bun._id === id) return 2
+        return toppings.filter(t => t._id === id).length
+    }, [bun, toppings])
 
     const getIngredients = useCallback(() => {
-        return ingredients.ingredients.filter(ingr => ingr.type === id)
+        return ingredients.filter(ingr => ingr.type === id)
     }, [id, ingredients])
 
     const ref = createRef()
