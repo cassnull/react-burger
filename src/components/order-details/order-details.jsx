@@ -1,10 +1,9 @@
-import { useContext } from 'react'
 import styles from './order-details.module.css'
 import Done from './img/done.svg'
-import { OrderContext } from '../../services/orderContext'
+import { useSelector } from 'react-redux'
 
 export const OrderDetails = () => {
-    const [order] = useContext(OrderContext)
+    const order = useSelector((state) => state.order)
     return (
         <div className={styles.OrderDetails}>
             <h3

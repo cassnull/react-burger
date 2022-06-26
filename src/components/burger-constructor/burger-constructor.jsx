@@ -1,43 +1,61 @@
-import { useMemo, useState, useContext } from 'react'
+import { useMemo, useState } from 'react'
 import {
     Button,
     CurrencyIcon,
-    ConstructorElement,
-    DragIcon,
+    ConstructorElement as UIConstructorElement,
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './burger-constructor.module.css'
 import { Modal } from '../modal/modal'
 import { OrderDetails } from '../order-details/order-details'
-import { OrderContext } from '../../services/orderContext'
-import * as api from '../../services/api'
+import { EmptyConstructorElement } from './empty-constructor-element/empty-constructor-element'
+import { useDispatch, useSelector } from 'react-redux'
+import { createOrder } from '../../services/actions'
+import { useDrop } from 'react-dnd'
+import { addBunToConstructor, addToppingToConstructor } from '../../services/actions'
+import { ingredientType } from '../../utils/types'
+import { ConstructorElement } from './constructor-element/constructor-element'
 
 export const BurgerConstructor = () => {
-    const [error, setError] = useState("")
+    const dispatch = useDispatch()
+    const ingredients = useSelector(state => state.ingredients.ingredients)
+    const bun = useSelector((state) => state.burgerConstructor.bun)
+    const toppings = useSelector((state) => state.burgerConstructor.toppings)
+    const { error } = useSelector((state) => state.order)
 
-    const [order, orderDispatch] = useContext(OrderContext)
+    const handleDrop = (itemId) => {
+        const ingredient = ingredients.find(
+            ({ _id }) => _id === itemId._id
+        );
+        const isBun = ingredient.type === ingredientType.BUN;
+
+        if (isBun) {
+            dispatch(addBunToConstructor(ingredient))
+        } else {
+            dispatch(addToppingToConstructor(ingredient))
+        }
+    }
+
+    const [{ isHover }, dropTarget] = useDrop({
+        accept: "ingredient",
+        drop(itemId) {
+            handleDrop(itemId);
+        },
+        collect: (monitor) => ({
+            isHover: monitor.isOver(),
+        }),
+    });
 
     const [isOpenOrderDetailsModal, setOpenOrderDetailsModal] = useState(false)
 
-    const total = useMemo(() => {
-        let total = order.bun ? order.bun.price * 2 : 0;
-        return order.toppings.reduce((previousValue, ingr) => previousValue + ingr.price, total)
-    }, [order])
+    const totalPrice = useMemo(() => {
+        let total = bun ? bun.price * 2 : 0
+        return toppings.reduce((previousValue, ingr) => previousValue + ingr.price, total)
+    }, [bun, toppings])
 
     const handleOpenOrderDetailsInModal = () => {
-        if (order.bun) {
-            const getData = async () => {
-                await api.createOrder([order.bun._id, ...order.toppings.map(t => t._id)])
-                    .then(data => {
-                        setError("");
-                        orderDispatch({ type: "setNumber", data })
-                        setOpenOrderDetailsModal(true)
-                    })
-                    .catch(error => {
-                        console.error(error)
-                        setError(error.message)
-                    })
-            }
-            getData()
+        if (bun) {
+            setOpenOrderDetailsModal(true);
+            dispatch(createOrder([bun, [...toppings]]))
         }
     }
 
@@ -47,42 +65,48 @@ export const BurgerConstructor = () => {
 
     return (
         <section className={`pt-25 mb-10 ${styles.BurgerConstructor}`}>
-            <ul className={`ml-4 ${styles.ConstructorList}`}>
-                <div className={`ml-8 mr-4 mb-4 ${styles.First}`}>
-                    {order.bun && (<ConstructorElement
+            <ul className={`ml-4 ${isHover ? styles.OnHover : ''} ${styles.ConstructorList}`} ref={dropTarget}>
+                {bun ? (<div className={`ml-8 mr-4 mb-4 ${styles.First}`}>
+                    <UIConstructorElement
                         type="top"
                         isLocked={true}
-                        text={`${order.bun.name} (верх)`}
-                        price={order.bun.price}
-                        thumbnail={order.bun.image}
-                    />)}
-                </div>
+                        text={`${bun.name} (верх)`}
+                        price={bun.price}
+                        thumbnail={bun.image}
+                    />
+                </div>) : (
+                    <EmptyConstructorElement
+                        text={`Вы можете добавить выбранную булку, перетащив ее карточку из ингредиентов сюда.`}
+                    />
+                )}
                 <div className={styles.Middle}>
-                    {order.toppings.map((ingr, i) => (
-                        <div key={`${ingr._id}_${i}`} className={styles.Card}>
-                            <DragIcon type="primary" />
-                            <ConstructorElement
-                                className='ml-2'
-                                text={ingr.name}
-                                price={ingr.price}
-                                thumbnail={ingr.image}
-                            />
-                        </div>)
+                    {toppings.length > 0 ? toppings.map((ingr, idx) => (<ConstructorElement
+                        key={ingr.id}
+                        index={idx}
+                        ingredient={ingr}
+                    />)) : (
+                        <EmptyConstructorElement
+                            text={`Вы можете добавить выбранные начинки, перетащив их карточку из ингредиентов сюда.`}
+                        />
                     )}
                 </div>
-                <div className={`ml-8 mt-4 mr-4 ${styles.Last}`}>
-                    {order.bun && (<ConstructorElement
+                {bun ? (<div className={`ml-8 mt-4 mr-4 ${styles.Last}`}>
+                    <UIConstructorElement
                         type="bottom"
                         isLocked={true}
-                        text={`${order.bun.name} (низ)`}
-                        price={order.bun.price}
-                        thumbnail={order.bun.image}
-                    />)}
-                </div>
+                        text={`${bun.name} (низ)`}
+                        price={bun.price}
+                        thumbnail={bun.image}
+                    />
+                </div>) : (
+                    <EmptyConstructorElement
+                        text={`Вы можете добавить выбранную булку, перетащив ее карточку из ингредиентов сюда.`}
+                    />
+                )}
             </ul>
             <div className={`mt-10 mr-4 ${styles.Order}`}>
                 <div className={`mr-10 ${styles.Total}`}>
-                    <p className={`text text_type_digits-medium ${styles.Price}`}>{total}</p>
+                    <p className={`text text_type_digits-medium ${styles.Price}`}>{totalPrice}</p>
                     <CurrencyIcon type='primary' />
                 </div>
                 <Button onClick={handleOpenOrderDetailsInModal}>Оформите заказ</Button>

@@ -33,12 +33,6 @@
     display: flex;
 }
 
-.Card {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 .ConstructorList {
     padding-left: 0;
     margin-top: 0;
@@ -57,4 +51,10 @@
 
 .Price {
     margin-right: 9.5px;
+}
+
+.OnHover {
+    border-radius: 5pt;
+    box-shadow: 0 0 0 1pt blue;
+    transition: .1s;
 }
