@@ -8,28 +8,29 @@ import {
 import { Modal } from '../modal/modal'
 import { OrderDetails } from '../order-details/order-details'
 import { EmptyConstructorElement } from './empty-constructor-element/empty-constructor-element'
-import { useDispatch, useSelector } from 'react-redux'
 import { createOrder } from '../../services/actions/orderAction'
 import { useDrop } from 'react-dnd'
 import { addBunToConstructor, addToppingToConstructor } from '../../services/actions/constructorAction'
-import { ingredientType } from '../../utils/types'
+import { EIngredient } from '../../utils/types'
 import { ConstructorElement } from './constructor-element/constructor-element'
+import { useSelector, useDispatch } from '../../services/hooks'
+
 import styles from './burger-constructor.module.css'
 
 export const BurgerConstructor = () => {
     const dispatch = useDispatch()
     const history = useHistory()
     const ingredients = useSelector(state => state.ingredients.ingredients)
-    const bun = useSelector((state) => state.burgerConstructor.bun)
-    const toppings = useSelector((state) => state.burgerConstructor.toppings)
-    const { error } = useSelector((state) => state.order)
-    const { user } = useSelector((state) => state.auth)
+    const bun = useSelector(state => state.burgerConstructor.bun)
+    const toppings = useSelector(state => state.burgerConstructor.toppings)
+    const { error } = useSelector(state => state.order)
+    const { user } = useSelector(state => state.auth)
 
     const handleDrop = (itemId) => {
         const ingredient = ingredients.find(
             ({ _id }) => _id === itemId._id
         );
-        const isBun = ingredient.type === ingredientType.BUN;
+        const isBun = ingredient.type === EIngredient.BUN;
 
         if (isBun) {
             dispatch(addBunToConstructor(ingredient))
