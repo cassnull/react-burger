@@ -1,9 +1,9 @@
 import styles from './order-details.module.css'
 import Done from './img/done.svg'
-import { useSelector } from 'react-redux'
+import { useSelector } from '../../services/hooks'
 
 export const OrderDetails = () => {
-    const order = useSelector((state) => state.order)
+    const order = useSelector(state => state.order)
     return (
         <div className={styles.OrderDetails}>
             <h3

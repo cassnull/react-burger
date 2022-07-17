@@ -1,14 +1,19 @@
-import { useCallback, useEffect, createRef } from 'react';
+import { useCallback, useEffect, createRef } from 'react'
 import styles from './burger-ingredients-group.module.css'
 import { BurgerIngredient } from './burger-ingredient/burger-ingredient'
-import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux'
+import { useSelector } from '../../../services/hooks'
 
-export const BurgerIngredientsGroup = ({ id, type, observer }) => {
+type TProp = {
+    id: string
+    type: string
+    observer: IntersectionObserver
+}
+
+export const BurgerIngredientsGroup = ({ id, type, observer }: TProp) => {
     const ingredients = useSelector(state => state.ingredients.ingredients)
-    const { bun, toppings } = useSelector((state) => state.burgerConstructor)
+    const { bun, toppings } = useSelector(state => state.burgerConstructor)
 
-    const getCount = useCallback((id) => {
+    const getCount = useCallback((id: string) => {
         if (bun && bun._id === id) return 2
         return toppings.filter(t => t._id === id).length
     }, [bun, toppings])
@@ -17,7 +22,7 @@ export const BurgerIngredientsGroup = ({ id, type, observer }) => {
         return ingredients.filter(ingr => ingr.type === id)
     }, [id, ingredients])
 
-    const ref = createRef()
+    const ref = createRef<HTMLDivElement>()
     useEffect(() => {
         const element = ref?.current
         if (element && observer) {
@@ -43,10 +48,4 @@ export const BurgerIngredientsGroup = ({ id, type, observer }) => {
             </div>
         </div>
     )
-}
-
-BurgerIngredientsGroup.propTypes = {
-    id: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    observer: PropTypes.object.isRequired,
 }

@@ -22,7 +22,6 @@
 }
 
 .MenuItem {
-    height: 56px;
     list-style-type: none;
 }
 
@@ -40,7 +39,6 @@
 .Profile {
     display: flex;
     text-decoration: none;
-    color: white;
     align-items: center;
 }
 
@@ -48,4 +46,14 @@
     left: 50%;
     transform: translateX(-50%);
     height: 50px;
+    pointer-events: none;
+    cursor: default;
+}
+
+.Active {
+    color: var(--text-primary-color);
+}
+
+.Inactive {
+    color: var(--text-inactive-color);
 }

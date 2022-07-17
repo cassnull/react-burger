@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import { App } from './components/app/app'
 import reportWebVitals from './reportWebVitals'
@@ -13,20 +14,31 @@ import thunk from 'redux-thunk'
 const rootElement = document.getElementById('root') as HTMLElement
 const root = ReactDOM.createRoot(rootElement)
 
-const win = window as any
-const composeEnhancers = win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-  ? win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
-  : compose
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
+
+const composeEnhancers = (process.env.NODE_ENV !== 'production' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
+  compose
 
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 
 const store = createStore(rootReducer, enhancer)
 
+export type AppDispatch = typeof store.dispatch
+
+export type ReduxState = ReturnType<typeof rootReducer>
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <DndProvider backend={HTML5Backend}>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </DndProvider>
     </Provider>
   </React.StrictMode>

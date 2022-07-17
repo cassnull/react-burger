@@ -5,20 +5,25 @@ import {
   DragIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import { useDrag, useDrop } from 'react-dnd'
-import { useDispatch } from 'react-redux'
-import { deleteToppingFromConstructor, changeToppingsPosition } from '../../../services/actions'
-import PropTypes from 'prop-types'
-import { ingredientsDataPropTypes } from '../../../utils/types'
+import { deleteToppingFromConstructor, changeToppingsPosition } from '../../../services/actions/constructorAction'
+import { TIngredientsData } from '../../../utils/types'
+import { useDispatch } from '../../../services/hooks'
 
-export const ConstructorElement = ({ ingredient, index }) => {
+type TProp = {
+  ingredient: TIngredientsData
+  index: number,
+}
+
+export const ConstructorElement = ({ ingredient, index }: TProp) => {
   const dispatch = useDispatch()
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null)
 
   const handleClose = () => {
+    // @ts-ignore
     dispatch(deleteToppingFromConstructor(ingredient.id))
   }
 
-  const [, drop] = useDrop({
+  const [, drop] = useDrop<{ id: string; index: number }>({
     accept: "item",
     collect(monitor) {
       return {
@@ -42,7 +47,9 @@ export const ConstructorElement = ({ ingredient, index }) => {
 
       const clientOffset = monitor.getClientOffset()
 
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      if (!clientOffset) return
+
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top
 
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return
@@ -59,7 +66,8 @@ export const ConstructorElement = ({ ingredient, index }) => {
   })
 
   const moveCard = useCallback(
-    (fromIndex, toIndex) => {
+    (fromIndex: number, toIndex: number) => {
+      // @ts-ignore
       dispatch(changeToppingsPosition(toIndex, fromIndex))
     }, [dispatch])
 
@@ -79,7 +87,6 @@ export const ConstructorElement = ({ ingredient, index }) => {
     <div ref={ref} className={styles.Card} style={{ opacity }}>
       <DragIcon type="primary" />
       <UIConstructorElement
-        className='ml-2'
         text={ingredient.name}
         price={ingredient.price}
         thumbnail={ingredient.image}
@@ -87,10 +94,5 @@ export const ConstructorElement = ({ ingredient, index }) => {
       />
     </div>
   )
-}
-
-ConstructorElement.propTypes = {
-  ingredient: ingredientsDataPropTypes.isRequired,
-  index: PropTypes.number.isRequired,
 }
 

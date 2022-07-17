@@ -1,32 +1,36 @@
 import { useMemo, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import {
     Button,
     CurrencyIcon,
     ConstructorElement as UIConstructorElement,
 } from '@ya.praktikum/react-developer-burger-ui-components'
-import styles from './burger-constructor.module.css'
 import { Modal } from '../modal/modal'
 import { OrderDetails } from '../order-details/order-details'
 import { EmptyConstructorElement } from './empty-constructor-element/empty-constructor-element'
-import { useDispatch, useSelector } from 'react-redux'
-import { createOrder } from '../../services/actions'
+import { createOrder } from '../../services/actions/orderAction'
 import { useDrop } from 'react-dnd'
-import { addBunToConstructor, addToppingToConstructor } from '../../services/actions'
-import { ingredientType } from '../../utils/types'
+import { addBunToConstructor, addToppingToConstructor } from '../../services/actions/constructorAction'
+import { EIngredient } from '../../utils/types'
 import { ConstructorElement } from './constructor-element/constructor-element'
+import { useSelector, useDispatch } from '../../services/hooks'
+
+import styles from './burger-constructor.module.css'
 
 export const BurgerConstructor = () => {
     const dispatch = useDispatch()
+    const history = useHistory()
     const ingredients = useSelector(state => state.ingredients.ingredients)
-    const bun = useSelector((state) => state.burgerConstructor.bun)
-    const toppings = useSelector((state) => state.burgerConstructor.toppings)
-    const { error } = useSelector((state) => state.order)
+    const bun = useSelector(state => state.burgerConstructor.bun)
+    const toppings = useSelector(state => state.burgerConstructor.toppings)
+    const { error } = useSelector(state => state.order)
+    const { user } = useSelector(state => state.auth)
 
     const handleDrop = (itemId) => {
         const ingredient = ingredients.find(
             ({ _id }) => _id === itemId._id
         );
-        const isBun = ingredient.type === ingredientType.BUN;
+        const isBun = ingredient.type === EIngredient.BUN;
 
         if (isBun) {
             dispatch(addBunToConstructor(ingredient))
@@ -36,7 +40,7 @@ export const BurgerConstructor = () => {
     }
 
     const [{ isHover }, dropTarget] = useDrop({
-        accept: "ingredient",
+        accept: 'ingredient',
         drop(itemId) {
             handleDrop(itemId);
         },
@@ -53,6 +57,12 @@ export const BurgerConstructor = () => {
     }, [bun, toppings])
 
     const handleOpenOrderDetailsInModal = () => {
+        if (!bun && !toppings.length) {
+            return
+        }
+        if (!user) {
+            history.push('/login')
+        }
         if (bun) {
             setOpenOrderDetailsModal(true);
             dispatch(createOrder([bun, [...toppings]]))
@@ -68,7 +78,7 @@ export const BurgerConstructor = () => {
             <ul className={`ml-4 ${isHover ? styles.OnHover : ''} ${styles.ConstructorList}`} ref={dropTarget}>
                 {bun ? (<div className={`ml-8 mr-4 mb-4 ${styles.First}`}>
                     <UIConstructorElement
-                        type="top"
+                        type='top'
                         isLocked={true}
                         text={`${bun.name} (верх)`}
                         price={bun.price}
@@ -92,7 +102,7 @@ export const BurgerConstructor = () => {
                 </div>
                 {bun ? (<div className={`ml-8 mt-4 mr-4 ${styles.Last}`}>
                     <UIConstructorElement
-                        type="bottom"
+                        type='bottom'
                         isLocked={true}
                         text={`${bun.name} (низ)`}
                         price={bun.price}
