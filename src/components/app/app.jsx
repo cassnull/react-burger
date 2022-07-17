@@ -1,14 +1,24 @@
 import { useEffect } from 'react'
+import { Route, Switch, useLocation } from 'react-router-dom'
 import styles from './app.module.css';
 import { AppHeader } from '../app-header/app-header'
-import { BurgerIngredients } from '../burger-ingredients/burger-ingredients'
-import { BurgerConstructor } from '../burger-constructor/burger-constructor'
-import { useDispatch, useSelector } from 'react-redux'
-import { getIngredients } from "../../services/actions/index";
+import { Main } from '../../pages/main/main'
+import { SignIn } from '../../pages/registration/sign-in/sign-in'
+import { Registration } from '../../pages/registration/registration/registration'
+import { ForgotPassword1 } from '../../pages/registration/forgot-password-1/forgot-password-1'
+import { ForgotPassword2 } from '../../pages/registration/forgot-password-2/forgot-password-2'
+import { Profile } from '../../pages/account/profile/profile'
+import { useDispatch } from 'react-redux'
+import { getIngredients } from '../../services/actions/ingredientsAction'
+import { ProtectedRoute } from '../protected-route/protected-route'
+import { IngredientDetails } from '../ingredient-details/ingredient-details'
+import { Modal } from '../modal/modal'
 
 export const App = () => {
   const dispatch = useDispatch()
-  const { error } = useSelector(state => state.ingredients)
+  const location = useLocation()
+
+  let details = location.state && location.state.details
 
   useEffect(() => {
     dispatch(getIngredients());
@@ -17,14 +27,39 @@ export const App = () => {
   return (
     <div className={`ml-10 mr-10 ${styles.App}`}>
       <AppHeader />
-      <main className={styles.Main}>
-        {!error
-          ? <>
-            <BurgerIngredients />
-            <BurgerConstructor />
-          </>
-          : `Неизвестная ошибка: ${error}`}
-      </main>
+      <Switch location={details || location}>
+        <Route path='/' exact={true}>
+          <Main />
+        </Route>
+        <Route path='/login' exact={true}>
+          <SignIn />
+        </Route>
+        <Route path='/register' exact={true}>
+          <Registration />
+        </Route>
+        <Route path='/forgot-password' exact={true}>
+          <ForgotPassword1 />
+        </Route>
+        <Route path='/reset-password' exact={true}>
+          <ForgotPassword2 />
+        </Route>
+        <ProtectedRoute path='/profile' exact={true}>
+          <Profile />
+        </ProtectedRoute>
+        <Route path='/ingredients/:id' exact={true}>
+          <IngredientDetails title='Детали ингредиента' />
+        </Route>
+      </Switch>
+      {details && (
+        <Route
+          path='/ingredients/:id'
+          children={
+            <Modal title='Детали ингредиента'>
+              <IngredientDetails/>
+            </Modal>
+          }
+        />
+      )}
     </div>
   )
 }

@@ -3,24 +3,28 @@ import { createPortal } from 'react-dom'
 import styles from './modal.module.css'
 import { ModalOverlay } from './modal-overlay/modal-overlay'
 import { CloseIcon } from '@ya.praktikum/react-developer-burger-ui-components'
+import { useHistory } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 export const Modal = ({ onClose, children, title }) => {
-    const modalRoot = document.getElementById("modal");
+    const history = useHistory()
+    const modalRoot = document.getElementById('modal')
 
-    const handleEscapeKey = useCallback(
-        (e) => {
-            if (e.key === 'Escape') onClose()
-        },
-        [onClose]
-    )
+    const onCloseHandler = useCallback(() => {
+        onClose ? onClose() : history.goBack()
+    }, [onClose, history])
 
     useEffect(() => {
-        document.addEventListener('keydown', handleEscapeKey)
-        return () => {
-            document.removeEventListener('keydown', handleEscapeKey)
+        const handleEscapeClose = (e) => {
+            if (e.key === "Escape") {
+                onCloseHandler()
+            }
         }
-    }, [handleEscapeKey])
+        document.addEventListener('keydown', handleEscapeClose)
+        return () => {
+            document.removeEventListener('keydown', handleEscapeClose)
+        }
+    }, [onCloseHandler])
 
     return createPortal((
         <>
@@ -31,17 +35,17 @@ export const Modal = ({ onClose, children, title }) => {
                     </h2>
                 )}
                 <div className={styles.Close}>
-                    <CloseIcon type="primary" onClick={onClose} />
+                    <CloseIcon type='primary' onClick={onCloseHandler} />
                 </div>
                 {children}
             </div>
-            <ModalOverlay onClick={onClose} />
+            <ModalOverlay onClick={onCloseHandler} />
         </>
-    ), modalRoot);
+    ), modalRoot)
 }
 
 Modal.propTypes = {
-    onClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
     children: PropTypes.node.isRequired,
     title: PropTypes.string,
 }

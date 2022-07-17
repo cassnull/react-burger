@@ -1,4 +1,4 @@
-import { useCallback, useEffect, createRef } from 'react';
+import { useCallback, useEffect, createRef } from 'react'
 import styles from './burger-ingredients-group.module.css'
 import { BurgerIngredient } from './burger-ingredient/burger-ingredient'
 import PropTypes from 'prop-types'

@@ -1,16 +1,15 @@
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './burger-ingredient.module.css'
 import PropTypes from 'prop-types'
-import { Modal } from '../../../modal/modal'
-import { IngredientDetails } from '../../../ingredient-details/ingredient-details'
 import { ingredientsDataPropTypes } from '../../../../utils/types'
 import { useDrag } from 'react-dnd'
-import { useDispatch, useSelector } from 'react-redux'
-import { openIngredientDetails, closeIngredientDetails } from '../../../../services/actions'
+import { useDispatch } from 'react-redux'
+import { openIngredientDetails } from '../../../../services/actions/ingredientDetailsAction'
+import { Link, useLocation } from 'react-router-dom'
 
 export const BurgerIngredient = ({ count, ingredientsData }) => {
     const dispatch = useDispatch()
-    const { isOpen } = useSelector(state => state.ingredientDetails)
+    const location = useLocation()
 
     const [, dragRef] = useDrag({
         type: "ingredient",
@@ -24,15 +23,17 @@ export const BurgerIngredient = ({ count, ingredientsData }) => {
         dispatch(openIngredientDetails(ingredientsData))
     }
 
-    const handleCloseIngredientInModal = () => {
-        dispatch(closeIngredientDetails(ingredientsData))
-    }
-
-    const ingredientTitle = 'Детали ингредиента'
-
     return (
-        <>
-            <article className={`${styles.Card}`} onClick={() => handleOpenIngredientInModal()} ref={dragRef}>
+        <Link
+            className={styles.Link}
+            key={ingredientsData._id}
+            to={{
+                pathname: `/ingredients/${ingredientsData._id}`,
+                state: { details: location },
+            }}
+            ref={dragRef}
+        >
+            <article className={`${styles.Card}`} onClick={() => handleOpenIngredientInModal()}>
                 {!!count && <Counter count={count} size="default" />}
                 <img src={ingredientsData.image} alt={ingredientsData.name} className={`ml-4 mr-4 ${styles.Illustration}`} />
                 <div className={`mt-1 mb-1 ${styles.Price}`}>
@@ -41,12 +42,7 @@ export const BurgerIngredient = ({ count, ingredientsData }) => {
                 </div>
                 <div className={styles.Name}>{ingredientsData.name}</div>
             </article>
-            {isOpen && (
-                <Modal onClose={handleCloseIngredientInModal} title={ingredientTitle}>
-                    <IngredientDetails />
-                </Modal>
-            )}
-        </>
+        </Link>
     )
 }
 

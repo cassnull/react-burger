@@ -1,4 +1,4 @@
-import { INGREDIENS } from '../actions/index'
+import { INGREDIENS } from '../actions/ingredientsAction'
 
 const initialState = {
   ingredients: [],
@@ -29,7 +29,7 @@ export const ingredientsReducer = (state = initialState, action) => {
       return {
         ...state,
         request: false,
-        failed: false,
+        failed: true,
         error: action.error,
       };
     }
